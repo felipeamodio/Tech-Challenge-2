@@ -1,0 +1,28 @@
+name: CI/CD Pipeline
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout do código
+      - uses: actions/checkout@v2
+
+      # Configuração do Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      # Instalação de dependências
+      - run: npm install
+
+      # Rodar testes unitários
+      - name: Run tests
+        run: npm test
+
+      # Build Docker
+      - name: Build Docker image
+        run: docker build -t blog-app .

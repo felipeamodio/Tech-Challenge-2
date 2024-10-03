@@ -1,0 +1,19 @@
+version: '3'
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      - MONGO_URI=mongodb://db:27017/blogapp  # Defina a URI para o MongoDB no container
+  db:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db  # Volume para persistir os dados do MongoDB
+
+volumes:
+  mongo-data:
