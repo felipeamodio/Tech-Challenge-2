@@ -5,19 +5,19 @@ const mongoose = require('mongoose');
 const PostSchema = new mongoose.Schema({
   title: {
     type: String,
-    required: true, // Título é obrigatório
+    required: true,
   },
   content: {
     type: String,
-    required: true, // Conteúdo é obrigatório
+    required: true,
   },
   author: {
     type: String,
-    required: true, // Autor é obrigatório
+    required: true,
   },
   createdAt: {
     type: Date,
-    default: Date.now, // Define a data atual como padrão
+    default: Date.now,
   },
 });
 

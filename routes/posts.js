@@ -1,22 +1,54 @@
+const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
-const Post = require('../models/Post'); // Importando o modelo de Post
+const Post = require('../models/Post'); 
 
-// Lista de Posts (GET /posts)
+// Lista de Posts 
 router.get('/posts', async (req, res) => {
   try {
-    const posts = await Post.find(); // Busca todos os posts
+    const posts = await Post.find();
     res.status(200).json(posts);
   } catch (error) {
     res.status(500).json({ message: 'Erro ao listar posts', error });
   }
 });
 
-// Leitura de Post por ID (GET /posts/:id)
+// Busca de posts por palavra-chave 
+router.get('/posts/search', async (req, res) => {
+  const { query } = req.query;
+
+  if (!query) {
+    return res.status(400).json({ message: 'Termo de busca não fornecido' });
+  }
+
+  try {
+    const posts = await Post.find({
+      $or: [
+        { title: { $regex: query, $options: 'i' } },
+        { content: { $regex: query, $options: 'i' } },
+      ],
+    });
+
+    if (posts.length === 0) {
+      return res.status(404).json({ message: 'Nenhum post encontrado' });
+    }
+
+    res.status(200).json(posts);
+  } catch (error) {
+    res.status(500).json({ message: 'Erro ao buscar posts', error });
+  }
+});
+
+// Leitura de Post por ID
 router.get('/posts/:id', async (req, res) => {
   const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: 'ID inválido' });
+  }
+
   try {
-    const post = await Post.findById(id); // Busca o post pelo ID
+    const post = await Post.findById(id);
     if (!post) {
       return res.status(404).json({ message: 'Post não encontrado' });
     }
@@ -26,7 +58,8 @@ router.get('/posts/:id', async (req, res) => {
   }
 });
 
-// Criação de Post (POST /posts)
+
+// Criação de Post 
 router.post('/posts', async (req, res) => {
   const { title, content, author } = req.body;
   if (!title || !content || !author) {
@@ -46,7 +79,7 @@ router.post('/posts', async (req, res) => {
   }
 });
 
-// Edição de postagens (PUT /posts/:id)
+// Edição de postagens 
 router.put('/posts/:id', async (req, res) => {
   const { title, content, author } = req.body;
 
@@ -68,7 +101,7 @@ router.put('/posts/:id', async (req, res) => {
   }
 });
 
-// Exclusão de postagens (DELETE /posts/:id)
+// Exclusão de postagens 
 router.delete('/posts/:id', async (req, res) => {
   try {
     const post = await Post.findByIdAndDelete(req.params.id);
@@ -81,26 +114,6 @@ router.delete('/posts/:id', async (req, res) => {
   }
 });
 
-// Busca de posts por palavra-chave (GET /posts/search)
-router.get('/posts/search', async (req, res) => {
-  const { query } = req.query;
 
-  try {
-    const posts = await Post.find({
-      $or: [
-        { title: { $regex: query, $options: 'i' } },
-        { content: { $regex: query, $options: 'i' } },
-      ],
-    });
-    
-    if (posts.length === 0) {
-      return res.status(404).json({ message: 'Nenhum post encontrado' });
-    }
-
-    res.status(200).json(posts);
-  } catch (error) {
-    res.status(500).json({ message: 'Erro ao buscar posts', error });
-  }
-});
 
 module.exports = router;

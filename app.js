@@ -1,5 +1,5 @@
 const express = require('express');
-const connectDB = require('./db'); // Importa a função para conectar ao MongoDB
+const connectDB = require('./db');
 const postRoutes = require('./routes/posts'); // Rotas dos posts
 const app = express();
 
@@ -9,8 +9,8 @@ connectDB();
 // Middleware para permitir JSON
 app.use(express.json());
 
-// Roteamento
-app.use('/api', postRoutes); // Aqui você adiciona as rotas dos posts
+// Rotas
+app.use('/api', postRoutes); 
 
 // Iniciar o servidor
 const PORT = process.env.PORT || 3000;
